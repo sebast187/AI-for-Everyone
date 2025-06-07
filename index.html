@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeepSeek AI Chat</title>
+    <title>Gemini AI Chat</title>
     <style>
         /* --- Global Reset & Basic Styling --- */
         :root {
-            --primary-color: #0a84ff; /* Apple Blue */
-            --secondary-color: #34c759; /* Apple Green */
+            --primary-color: #4285F4; /* Google Blue */
+            --secondary-color: #34A853; /* Google Green */
             --background-color: #1c1c1e; /* Dark mode background */
             --surface-color: #2c2c2e; /* Slightly lighter surface */
             --text-color: #f2f2f7;
             --text-secondary-color: #8e8e93;
             --border-color: #3a3a3c;
-            --error-color: #ff3b30; /* Apple Red */
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --error-color: #EA4335; /* Google Red */
+            --font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             --border-radius: 12px;
             --input-height: 48px;
         }
 
         [data-theme="light"] {
-            --primary-color: #007aff;
-            --secondary-color: #34c759;
-            --background-color: #f2f2f7;
+            --primary-color: #1a73e8;
+            --secondary-color: #34A853;
+            --background-color: #f8f9fa; /* Lighter Google-ish background */
             --surface-color: #ffffff;
-            --text-color: #000000;
-            --text-secondary-color: #6c6c70;
-            --border-color: #d1d1d6;
+            --text-color: #202124;  /* Google text color */
+            --text-secondary-color: #5f6368;
+            --border-color: #dadce0;
         }
 
         * {
@@ -54,12 +54,18 @@
             padding: 10px 15px;
             border-radius: var(--border-radius);
             font-size: 1rem;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            font-weight: 500;
         }
 
         button:hover {
-            background-color: color-mix(in srgb, var(--primary-color) 80%, black);
+            background-color: color-mix(in srgb, var(--primary-color) 85%, black);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
         }
+        button:active {
+            background-color: color-mix(in srgb, var(--primary-color) 70%, black);
+        }
+
 
         /* --- App Container & Layout --- */
         #app-container {
@@ -97,6 +103,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-weight: 500;
         }
 
         #close-sidebar-btn {
@@ -198,6 +205,7 @@
             display: flex;
             align-items: center;
             min-height: 60px; /* Ensure header has some height */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Subtle shadow for header */
         }
 
         header h1 {
@@ -206,6 +214,7 @@
             margin-left: 10px;
             flex-grow: 1;
             text-align: center; /* Center title if menu button is on left */
+            font-weight: 500;
         }
 
         #menu-toggle-btn {
@@ -213,7 +222,7 @@
             background: none;
             color: var(--primary-color);
             padding: 5px;
-            z-index: 10; /* Keep it above chat content when sidebar is not fixed */
+            z-index: 10; 
         }
         #theme-toggle-btn {
             font-size: 1.5rem;
@@ -243,10 +252,11 @@
             padding: 12px 18px;
             border-radius: var(--border-radius);
             max-width: 75%;
-            line-height: 1.5;
+            line-height: 1.6; /* Improved readability */
             word-wrap: break-word;
             display: flex;
-            flex-direction: column; /* For potential timestamp later */
+            flex-direction: column; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08); /* Subtle shadow on messages */
         }
 
         .message.user {
@@ -268,7 +278,7 @@
             background-color: color-mix(in srgb, var(--error-color) 30%, transparent);
             color: var(--error-color);
             border: 1px solid var(--error-color);
-            align-self: stretch; /* Full width error message */
+            align-self: stretch; 
             text-align: center;
         }
 
@@ -295,8 +305,9 @@
             font-weight: bold;
             margin-bottom: 4px;
             color: var(--text-secondary-color);
+            text-transform: uppercase;
         }
-        .message.user .message-role { color: rgba(255,255,255,0.7); }
+        .message.user .message-role { color: rgba(255,255,255,0.8); }
         .message.ai .message-role { color: var(--text-secondary-color); }
 
 
@@ -318,11 +329,11 @@
             color: var(--text-color);
             font-family: var(--font-family);
             font-size: 1rem;
-            resize: none; /* Disable manual resize, JS will handle height */
+            resize: none; 
             min-height: var(--input-height);
-            max-height: 150px; /* Max height before scrolling */
-            line-height: 1.4;
-            overflow-y: auto; /* Scroll if content exceeds max-height */
+            max-height: 150px; 
+            line-height: 1.5;
+            overflow-y: auto; 
         }
 
         #message-input::placeholder {
@@ -332,39 +343,38 @@
         #message-input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 30%, transparent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 20%, transparent);
         }
 
         #send-button {
             margin-left: 10px;
-            height: var(--input-height); /* Match initial textarea height */
-            min-width: 80px; /* Ensure button has a decent width */
-            align-self: flex-end; /* Stick to bottom with textarea */
+            height: var(--input-height); 
+            min-width: 80px; 
+            align-self: flex-end; 
         }
         
         #overlay {
-            display: none; /* Hidden by default */
+            display: none; 
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999; /* Below sidebar, above main content */
+            z-index: 999; 
         }
 
         /* --- Mobile Specific Styling & Responsiveness --- */
         @media (max-width: 768px) {
             #chat-history-sidebar {
-                box-shadow: 2px 0 10px rgba(0,0,0,0.1); /* Add shadow when it overlays */
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1); 
             }
-            /* Main content is not pushed by sidebar on mobile, it's an overlay */
             #main-content.sidebar-open-main-content { 
-                margin-left: 0; /* No margin push on mobile */
+                margin-left: 0; 
             }
 
             #overlay.active {
-                display: block; /* Show overlay on mobile when sidebar is open */
+                display: block; 
             }
             
             header h1 {
@@ -392,31 +402,21 @@
         /* Desktop: Sidebar pushes content */
         @media (min-width: 769px) {
             #chat-history-sidebar {
-                position: relative; /* Part of the document flow */
-                left: 0 !important; /* Always visible or animated in if permanently toggleable */
-                /* transform: translateX(-100%);  Alternative: Start hidden and slide in */
-                /* transition: transform 0.3s ease-in-out; */
+                position: relative; 
+                left: 0 !important; 
             }
 
-            /* If sidebar is to be permanently visible on desktop */
-            /* #chat-history-sidebar { transform: translateX(0); } */
-            /* #main-content { margin-left: 280px; } */
-
-             /* For toggleable sidebar on desktop: */
             #chat-history-sidebar:not(.open) {
                 width: 0;
                 padding: 15px 0;
-                overflow: hidden; /* Hide content when collapsed */
+                overflow: hidden; 
                 border-right: none;
             }
              #chat-history-sidebar.open {
-                width: 280px; /* Explicit width when open */
+                width: 280px; 
                 padding: 15px;
                 border-right: 1px solid var(--border-color);
             }
-
-            /* The menu button may hide on larger screens if sidebar is always visible */
-            /* #menu-toggle-btn { display: none; } */
         }
     </style>
 </head>
@@ -431,12 +431,6 @@
             <button id="new-chat-btn">✨ New Chat</button>
             <div id="history-list">
                 <!-- History items will be populated by JS -->
-                <!-- Example: 
-                <div class="history-item" data-chat-id="123">
-                    <span class="history-item-title">Chat about dogs...</span>
-                    <button class="delete-chat-btn" data-chat-id="123">&🗑️</button>
-                </div> 
-                -->
             </div>
             <button id="clear-all-history-btn">Clear All History</button>
         </div>
@@ -446,28 +440,18 @@
         <div id="main-content">
             <header>
                 <button id="menu-toggle-btn" aria-label="Toggle chat history menu">☰</button>
-                <h1>DeepSeek AI Chat</h1>
+                <h1>Gemini AI Chat</h1>
                 <button id="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
             </header>
 
             <div id="chat-window">
                 <div id="chat-messages">
                     <!-- Messages will be appended here by JS -->
-                    <!-- Example:
-                    <div class="message user">
-                        <span class="message-role">You</span>
-                        Hello AI!
-                    </div>
-                    <div class="message ai">
-                        <span class="message-role">AI</span>
-                        Hello there! How can I help you today?
-                    </div>
-                    -->
                 </div>
             </div>
 
             <div id="input-area">
-                <textarea id="message-input" placeholder="Ask me anything..." rows="1"></textarea>
+                <textarea id="message-input" placeholder="Ask Gemini anything..." rows="1"></textarea>
                 <button id="send-button" aria-label="Send message">Send</button>
             </div>
         </div>
@@ -475,10 +459,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-        const API_KEY = 'sk-71d11edbbca54ba59cee57c24da4b282'; // Your expendable API key
-        const API_URL = 'https://api.deepseek.com/chat/completions'; // Confirm this is the correct endpoint
+        const GEMINI_API_KEY = 'AIzaSyDSmnag3Etegff-TzHUgf-cgvgiPGYCh8I'; // Your Gemini API Key
+        const GEMINI_MODEL = 'gemini-1.5-flash-latest'; // Or 'gemini-pro', or 'gemini-2.0-flash' if available/works via REST
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
     
-        // --- DOM Elements ---
+        // --- DOM Elements (Same as before) ---
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const chatMessages = document.getElementById('chat-messages');
@@ -495,10 +480,12 @@
     
         // --- Application State ---
         let currentChatId = null;
-        let conversationHistory = []; // For the current chat being sent to API
-        let allChats = {}; // Stores all chat sessions { id: { title: '', messages: [] } }
+        // conversationHistoryForAPI will store messages in Gemini's expected format:
+        // { role: "user" | "model", parts: [{ text: "message content" }] }
+        let conversationHistoryForAPI = [];
+        let allChats = {}; // Stores all chat sessions { id: { title: '', uiMessages: [], apiMessages: [], timestamp: Date } }
     
-        // --- Utility Functions ---
+        // --- Utility Functions (Same as before) ---
         function generateUUID() {
             return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -515,13 +502,12 @@
             return p.innerHTML;
         }
     
-        // --- Theme Management ---
+        // --- Theme Management (Same as before) ---
         function applyTheme(theme) {
             document.body.setAttribute('data-theme', theme);
             localStorage.setItem('chatTheme', theme);
             themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌓';
             themeToggleBtn.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`);
-    
         }
     
         function toggleTheme() {
@@ -530,35 +516,33 @@
             applyTheme(newTheme);
         }
     
-        // --- Message Display ---
-        function addMessageToDOM(sender, text, type = 'text') { // type can be 'text', 'loading', 'error'
+        // --- Message Display (Minor change for role display) ---
+        function addMessageToDOM(senderRole, text, type = 'text') { // senderRole is 'user' or 'model'
             const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender.toLowerCase());
+            // For UI, we can keep classes 'user' and 'ai' for styling if preferred
+            messageDiv.classList.add('message', senderRole === 'user' ? 'user' : 'ai');
             if (type !== 'text') {
                 messageDiv.classList.add(type);
             }
     
             const roleSpan = document.createElement('span');
             roleSpan.classList.add('message-role');
-            roleSpan.textContent = sender === 'user' ? 'You' : 'AI';
+            roleSpan.textContent = senderRole === 'user' ? 'You' : 'AI (Gemini)'; // Indicate model
             messageDiv.appendChild(roleSpan);
             
-            // For AI messages, parse for code blocks if needed or use a library for markdown
-            // Basic pre formatting for now for simplicity
-            if (sender === 'ai' && text.includes('```')) {
-                // Simple code block handling (can be improved with markdown parser)
+            if (senderRole === 'model' && text.includes('```')) { // Simple code block handling
                 const parts = text.split(/```(\w*)\n([\s\S]*?)\n```/g);
                 parts.forEach((part, index) => {
-                    if (index % 4 === 2) { // This is the code content
+                    if (index % 4 === 2) { 
                         const pre = document.createElement('pre');
                         const code = document.createElement('code');
-                        if (parts[index-1]) { // Language specified
+                        if (parts[index-1]) { 
                             code.className = `language-${parts[index-1]}`;
                         }
                         code.textContent = part;
                         pre.appendChild(code);
                         messageDiv.appendChild(pre);
-                    } else if (index % 4 === 0 && part.trim() !== '') { // Regular text
+                    } else if (index % 4 === 0 && part.trim() !== '') { 
                         const p = document.createElement('p');
                         p.innerHTML = escapeHTML(part).replace(/\n/g, '<br>');
                         messageDiv.appendChild(p);
@@ -566,23 +550,22 @@
                 });
             } else {
                  const p = document.createElement('p');
-                 p.innerHTML = escapeHTML(text).replace(/\n/g, '<br>'); // Basic formatting
+                 p.innerHTML = escapeHTML(text).replace(/\n/g, '<br>');
                  messageDiv.appendChild(p);
             }
     
             chatMessages.appendChild(messageDiv);
             scrollToBottom();
-            return messageDiv; // Return for potential modification (e.g., removing loading)
+            return messageDiv;
         }
     
-    
-        // --- Chat History Management (LocalStorage) ---
+        // --- Chat History Management (LocalStorage) - Updated to store/load Gemini format ---
         function saveChatsToLocalStorage() {
-            localStorage.setItem('aiChatHistories', JSON.stringify(allChats));
+            localStorage.setItem('geminiChatHistories', JSON.stringify(allChats));
         }
     
         function loadChatsFromLocalStorage() {
-            const storedChats = localStorage.getItem('aiChatHistories');
+            const storedChats = localStorage.getItem('geminiChatHistories');
             if (storedChats) {
                 allChats = JSON.parse(storedChats);
             } else {
@@ -591,8 +574,8 @@
             renderHistoryList();
         }
     
-        function renderHistoryList() {
-            historyList.innerHTML = ''; // Clear existing items
+        function renderHistoryList() { // Same logic, just make sure data structure is consistent
+            historyList.innerHTML = '';
             if (Object.keys(allChats).length === 0) {
                 const noHistoryItem = document.createElement('p');
                 noHistoryItem.textContent = 'No chats yet. Start a new one!';
@@ -602,7 +585,7 @@
                 return;
             }
     
-            Object.entries(allChats).sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0)) // Sort by most recent
+            Object.entries(allChats).sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0))
             .forEach(([id, chatData]) => {
                 const historyItem = document.createElement('div');
                 historyItem.classList.add('history-item');
@@ -618,18 +601,18 @@
     
                 const deleteBtn = document.createElement('button');
                 deleteBtn.classList.add('delete-chat-btn');
-                deleteBtn.innerHTML = '🗑️'; // Use an icon or text
+                deleteBtn.innerHTML = '🗑️';
                 deleteBtn.setAttribute('aria-label', `Delete chat: ${titleSpan.textContent}`);
                 deleteBtn.dataset.chatId = id;
                 deleteBtn.onclick = (e) => {
-                    e.stopPropagation(); // Prevent loading chat when deleting
+                    e.stopPropagation();
                     deleteChat(id);
                 };
                 historyItem.appendChild(deleteBtn);
     
                 historyItem.onclick = () => {
                     loadChat(id);
-                    if (window.innerWidth <= 768) toggleSidebar(false); // Close sidebar on mobile after selection
+                    if (window.innerWidth <= 768) toggleSidebar(false);
                 };
                 historyList.appendChild(historyItem);
             });
@@ -637,22 +620,23 @@
     
         function createNewChat() {
             currentChatId = generateUUID();
-            conversationHistory = []; // Reset API conversation history
-            chatMessages.innerHTML = ''; // Clear display
+            conversationHistoryForAPI = []; // Reset API conversation history
+            chatMessages.innerHTML = '';
             messageInput.value = '';
             
-            // Add a placeholder welcome message or guide
-            addMessageToDOM('ai', "Hello! I'm your DeepSeek AI. How can I assist you today?");
+            addMessageToDOM('model', "Hello! I'm Gemini. How can I assist you today?");
     
             allChats[currentChatId] = {
-                title: `New Chat ${Object.keys(allChats).length + 1}`, // Placeholder title
-                messages: [], // These are the {role, content} pairs for UI
-                apiMessages: [], // These are {role, content} for API
+                title: `New Chat ${Object.keys(allChats).length + 1}`,
+                // uiMessages: stores {senderRole: 'user'/'model', text: '...'} for easy display
+                uiMessages: [{ senderRole: 'model', text: "Hello! I'm Gemini. How can I assist you today?" }],
+                // apiMessages: stores {role: "user" | "model", parts: [{ text: "..."}]} for API
+                apiMessages: [], // Start with empty API history; first user message will populate it
                 timestamp: Date.now()
             };
             
             saveChatsToLocalStorage();
-            renderHistoryList(); // Update sidebar, new chat will be active
+            renderHistoryList();
             setActiveHistoryItem(currentChatId);
             messageInput.focus();
         }
@@ -662,13 +646,14 @@
     
             currentChatId = chatId;
             const chatData = allChats[chatId];
-            chatMessages.innerHTML = ''; // Clear current messages
+            chatMessages.innerHTML = ''; 
     
-            conversationHistory = [...(chatData.apiMessages || [])]; // Load API history
+            // Load API history for Gemini
+            conversationHistoryForAPI = [...(chatData.apiMessages || [])];
     
-            // Re-populate messages in the chat window
-            (chatData.messages || []).forEach(msg => {
-                addMessageToDOM(msg.sender, msg.text);
+            // Re-populate messages in the chat window from uiMessages
+            (chatData.uiMessages || []).forEach(msg => {
+                addMessageToDOM(msg.senderRole, msg.text);
             });
     
             setActiveHistoryItem(chatId);
@@ -676,16 +661,15 @@
             scrollToBottom();
         }
     
-        function deleteChat(chatId) {
+        function deleteChat(chatId) { // Same logic
             if (confirm(`Are you sure you want to delete "${allChats[chatId]?.title || 'this chat'}"?`)) {
                 delete allChats[chatId];
                 saveChatsToLocalStorage();
                 renderHistoryList();
                 if (currentChatId === chatId) {
-                    // If current chat is deleted, start a new one or load another
                     const remainingChatIds = Object.keys(allChats);
                     if (remainingChatIds.length > 0) {
-                        loadChat(remainingChatIds[0]); // Load the first available chat
+                        loadChat(remainingChatIds[0]);
                     } else {
                         createNewChat();
                     }
@@ -693,16 +677,16 @@
             }
         }
     
-        function clearAllChats() {
+        function clearAllChats() { // Same logic
             if (confirm('Are you sure you want to delete ALL chat history? This cannot be undone.')) {
                 allChats = {};
                 saveChatsToLocalStorage();
-                createNewChat(); // Creates a fresh chat after clearing
+                createNewChat();
                 renderHistoryList();
             }
         }
         
-        function setActiveHistoryItem(chatId) {
+        function setActiveHistoryItem(chatId) { // Same logic
             document.querySelectorAll('.history-item').forEach(item => {
                 item.classList.remove('active');
                 if (item.dataset.chatId === chatId) {
@@ -711,88 +695,111 @@
             });
         }
     
-        function updateChatTitle(chatId, userMessage) {
-            if (allChats[chatId] && (allChats[chatId].title === `New Chat ${Object.keys(allChats).length}` || allChats[chatId].title.startsWith("New Chat") || allChats[chatId].messages.length <= 2)) {
-                // Generate title from the first user message, keep it short
-                const newTitle = userMessage.substring(0, 30) + (userMessage.length > 30 ? '...' : '');
+        function updateChatTitle(chatId, userMessageText) { // Same logic
+            if (allChats[chatId] && (allChats[chatId].title === `New Chat ${Object.keys(allChats).length}` || allChats[chatId].title.startsWith("New Chat") || allChats[chatId].uiMessages.length <= 2)) {
+                const newTitle = userMessageText.substring(0, 30) + (userMessageText.length > 30 ? '...' : '');
                 allChats[chatId].title = newTitle;
                 saveChatsToLocalStorage();
-                renderHistoryList(); // Update title in sidebar
+                renderHistoryList();
             }
         }
     
-    
-        // --- API Interaction ---
-        async function sendMessageToAPI(userMessage) {
+        // --- API Interaction (MAJOR CHANGES HERE for GEMINI) ---
+        async function sendMessageToAPI(userMessageText) {
             if (!currentChatId) {
-                createNewChat(); // Should not happen if UI is correct, but as a safeguard
+                createNewChat(); // Safeguard
             }
     
-            addMessageToDOM('user', userMessage);
-            // Add user message to both UI messages and API messages for the current chat
-            allChats[currentChatId].messages.push({ sender: 'user', text: userMessage });
-            conversationHistory.push({ role: 'user', content: userMessage });
-            allChats[currentChatId].apiMessages = [...conversationHistory]; // Save current API history state
-            allChats[currentChatId].timestamp = Date.now(); // Update timestamp for sorting
+            addMessageToDOM('user', userMessageText);
+            // Add to UI messages
+            allChats[currentChatId].uiMessages.push({ senderRole: 'user', text: userMessageText });
     
-            if (allChats[currentChatId].messages.length <= 2) { // After 1st user msg and AI response
-                updateChatTitle(currentChatId, userMessage);
+            // Prepare message for Gemini API history
+            const userMessageForAPI = { role: 'user', parts: [{ text: userMessageText }] };
+            conversationHistoryForAPI.push(userMessageForAPI);
+            
+            // Save API message structure to chat's history
+            allChats[currentChatId].apiMessages = [...conversationHistoryForAPI];
+            allChats[currentChatId].timestamp = Date.now();
+    
+            if (allChats[currentChatId].uiMessages.length <= 2) { 
+                updateChatTitle(currentChatId, userMessageText);
             }
-            saveChatsToLocalStorage(); // Save user message immediately
+            saveChatsToLocalStorage(); // Save user message
     
-            const loadingMessageDOM = addMessageToDOM('ai', 'Thinking', 'loading');
+            const loadingMessageDOM = addMessageToDOM('model', 'Thinking', 'loading');
             sendButton.disabled = true;
             messageInput.disabled = true;
     
             try {
+                const payload = {
+                    contents: conversationHistoryForAPI, // Send the full conversation history
+                    generationConfig: { // Optional: configure generation parameters
+                        // "temperature": 0.9,
+                        // "topK": 1,
+                        // "topP": 1,
+                        "maxOutputTokens": 2048,
+                        // "stopSequences": []
+                    },
+                    // safetySettings: [ // Optional: configure safety
+                    //  { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE" },
+                    //  { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE" },
+                    // ]
+                };
+                
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
                     },
-                    body: JSON.stringify({
-                        model: 'deepseek-chat', // Or 'deepseek-coder' if you prefer, or make it selectable
-                        messages: conversationHistory, // Send the whole conversation history
-                        // stream: true, // For streaming, would require more complex handling
-                        // You can add other parameters like 'search', 'temperature' etc. here
-                        // "use_search": true, // If DeepSeek R1 supports this directly in API
-                    })
+                    body: JSON.stringify(payload)
                 });
     
-                chatMessages.removeChild(loadingMessageDOM); // Remove loading indicator
+                chatMessages.removeChild(loadingMessageDOM);
     
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ detail: 'Unknown API error' }));
-                    const errorMessage = errorData.error?.message || errorData.detail || `Error: ${response.status} ${response.statusText}`;
+                    const errorData = await response.json().catch(() => ({ error: { message: 'Unknown API error' } }));
+                    const errorMessage = errorData.error?.message || `Error: ${response.status} ${response.statusText}`;
                     console.error('API Error:', errorData);
-                    addMessageToDOM('ai', `API Error: ${errorMessage}`, 'error');
-                    // Optionally remove the last user message from conversationHistory if API call failed entirely
-                    // conversationHistory.pop(); 
-                    // allChats[currentChatId].apiMessages.pop();
+                    addMessageToDOM('model', `API Error: ${errorMessage}`, 'error');
+                    // Remove the last user message from API history on failure to prevent issues on retry
+                    conversationHistoryForAPI.pop();
+                    allChats[currentChatId].apiMessages.pop();
+                    saveChatsToLocalStorage();
                 } else {
                     const data = await response.json();
-                    let aiResponse = '';
-                    if (data.choices && data.choices.length > 0) {
-                        aiResponse = data.choices[0].message.content;
-                    } else {
-                        aiResponse = "Sorry, I couldn't get a response.";
+                    let aiResponseText = "Sorry, I couldn't get a valid response.";
+    
+                    if (data.candidates && data.candidates.length > 0 &&
+                        data.candidates[0].content && data.candidates[0].content.parts &&
+                        data.candidates[0].content.parts.length > 0) {
+                        aiResponseText = data.candidates[0].content.parts[0].text;
+                    } else if (data.promptFeedback && data.promptFeedback.blockReason) {
+                         aiResponseText = `Blocked: ${data.promptFeedback.blockReason}. ${data.promptFeedback.safetyRatings.map(r => `${r.category} was ${r.probability}`).join(', ')}`;
+                         // Also remove last user message from API history as it was blocked.
+                         conversationHistoryForAPI.pop();
+                         allChats[currentChatId].apiMessages.pop();
                     }
                     
-                    addMessageToDOM('ai', aiResponse);
-                    conversationHistory.push({ role: 'assistant', content: aiResponse });
-                    allChats[currentChatId].messages.push({ sender: 'ai', text: aiResponse });
-                    allChats[currentChatId].apiMessages = [...conversationHistory];
+                    addMessageToDOM('model', aiResponseText);
+    
+                    // Add AI response to UI and API history (if not blocked)
+                    if (!(data.promptFeedback && data.promptFeedback.blockReason)) {
+                        allChats[currentChatId].uiMessages.push({ senderRole: 'model', text: aiResponseText });
+                        const aiMessageForAPI = { role: 'model', parts: [{ text: aiResponseText }] };
+                        conversationHistoryForAPI.push(aiMessageForAPI);
+                        allChats[currentChatId].apiMessages = [...conversationHistoryForAPI];
+                    }
                     allChats[currentChatId].timestamp = Date.now();
                     saveChatsToLocalStorage();
-                    renderHistoryList(); // Update timestamp possibly changing order
+                    renderHistoryList();
                 }
             } catch (error) {
                 console.error('Fetch Error:', error);
                 if (chatMessages.contains(loadingMessageDOM)) {
                     chatMessages.removeChild(loadingMessageDOM);
                 }
-                addMessageToDOM('ai', `Network Error: ${error.message}. Please check your connection.`, 'error');
+                addMessageToDOM('model', `Network Error: ${error.message}. Please check your connection.`, 'error');
             } finally {
                 sendButton.disabled = false;
                 messageInput.disabled = false;
@@ -801,18 +808,18 @@
             }
         }
     
-        // --- Input Handling ---
+        // --- Input Handling (Same as before) ---
         function handleSendMessage() {
             const messageText = messageInput.value.trim();
             if (messageText) {
                 sendMessageToAPI(messageText);
                 messageInput.value = '';
-                adjustTextareaHeight(); // Reset height after sending
+                adjustTextareaHeight();
             }
         }
     
         function adjustTextareaHeight() {
-            messageInput.style.height = 'auto'; // Temporarily shrink to get scrollHeight
+            messageInput.style.height = 'auto';
             let newHeight = messageInput.scrollHeight;
             const maxHeight = parseInt(getComputedStyle(messageInput).maxHeight, 10);
             if (newHeight > maxHeight) {
@@ -824,37 +831,33 @@
             messageInput.style.height = `${newHeight}px`;
         }
     
-    
-        // --- Sidebar Toggle ---
-        function toggleSidebar(forceState) { // forceState can be true (open), false (close), or undefined (toggle)
+        // --- Sidebar Toggle (Same as before) ---
+        function toggleSidebar(forceState) {
             const isOpen = chatHistorySidebar.classList.contains('open');
-            const bodyHasMargin = mainContent.classList.contains('sidebar-open-main-content');
-    
-            if (forceState === true || (forceState === undefined && !isOpen)) { // Open sidebar
+            if (forceState === true || (forceState === undefined && !isOpen)) {
                 chatHistorySidebar.classList.add('open');
-                if (window.innerWidth > 768) { // Desktop: push content
+                if (window.innerWidth > 768) {
                      mainContent.style.marginLeft = '280px';
-                } else { // Mobile: show overlay
+                } else {
                     overlay.classList.add('active');
                 }
                 menuToggleBtn.setAttribute('aria-expanded', 'true');
-            } else if (forceState === false || (forceState === undefined && isOpen)) { // Close sidebar
+            } else if (forceState === false || (forceState === undefined && isOpen)) {
                 chatHistorySidebar.classList.remove('open');
-                 if (window.innerWidth > 768) { // Desktop
+                 if (window.innerWidth > 768) {
                     mainContent.style.marginLeft = '0';
-                } else { // Mobile
+                } else {
                     overlay.classList.remove('active');
                 }
                 menuToggleBtn.setAttribute('aria-expanded', 'false');
             }
         }
     
-    
-        // --- Event Listeners ---
+        // --- Event Listeners (Same as before) ---
         sendButton.addEventListener('click', handleSendMessage);
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Prevent new line in textarea
+                e.preventDefault();
                 handleSendMessage();
             }
         });
@@ -862,35 +865,33 @@
     
         menuToggleBtn.addEventListener('click', () => toggleSidebar());
         closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
-        overlay.addEventListener('click', () => toggleSidebar(false)); // Close sidebar if overlay is clicked
+        overlay.addEventListener('click', () => toggleSidebar(false));
     
         newChatBtn.addEventListener('click', () => {
             createNewChat();
-            if (window.innerWidth <= 768) toggleSidebar(false); // Close sidebar on mobile after action
+            if (window.innerWidth <= 768) toggleSidebar(false);
         });
         clearAllHistoryBtn.addEventListener('click', clearAllChats);
     
         themeToggleBtn.addEventListener('click', toggleTheme);
     
         window.addEventListener('resize', () => {
-            // Adjust sidebar behavior on resize (e.g. if user resizes from mobile to desktop view)
             if (window.innerWidth > 768) {
-                overlay.classList.remove('active'); // Ensure overlay is hidden on desktop
+                overlay.classList.remove('active');
                 if (chatHistorySidebar.classList.contains('open')) {
                      mainContent.style.marginLeft = '280px';
                 } else {
                      mainContent.style.marginLeft = '0';
                 }
             } else {
-                // On mobile, if sidebar is open, ensure mainContent margin is 0
                 mainContent.style.marginLeft = '0';
             }
             adjustTextareaHeight();
         });
     
-        // --- Initialization ---
+        // --- Initialization (Same as before, but loads correct localstorage key) ---
         function init() {
-            loadChatsFromLocalStorage();
+            loadChatsFromLocalStorage(); // Uses 'geminiChatHistories' key
             
             const preferredTheme = localStorage.getItem('chatTheme') ||
                                    (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -898,19 +899,13 @@
     
             const chatIds = Object.keys(allChats);
             if (chatIds.length > 0) {
-                // Load the most recent chat (or the first one if timestamps are missing)
                 const sortedChats = Object.entries(allChats)
                                      .sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0));
                 loadChat(sortedChats[0][0]);
             } else {
                 createNewChat();
             }
-            adjustTextareaHeight(); // Initial height adjustment
-    
-            // Initial sidebar state for desktop (optional: could be closed by default)
-            // if (window.innerWidth > 768) {
-            //     toggleSidebar(true); // Open sidebar on desktop by default
-            // }
+            adjustTextareaHeight();
         }
     
         init();
