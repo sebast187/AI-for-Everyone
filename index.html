@@ -25,43 +25,43 @@
             --secondary-color: #34A853;
             --background-color: #f8f9fa;
             --surface-color: #ffffff;
-            --text-color: #202124; 
+            --text-color: #202124;
             --text-secondary-color: #5f6368;
             --border-color: #dadce0;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         /* MODIFIED: html and body overflow handling */
-        html { 
-            height: 100%; 
-            font-family: var(--font-family); 
+        html {
+            height: 100%;
+            font-family: var(--font-family);
             background-color: var(--background-color); /* Added for consistency if body doesn't cover */
-            color: var(--text-color); 
+            color: var(--text-color);
             overflow-x: hidden; /* Prevent horizontal scrollbars globally */
             font-size: 16px;
         }
-        body { 
-            height: 100%; 
+        body {
+            height: 100%;
             /* Inherits font, background, color from html */
-            overflow: hidden; /* Keep body itself from scrolling as app-container handles it */
+            /* overflow: hidden; */ /* MODIFIED: Removed this. Let app-container manage its overflow. This might be causing header clipping on mobile. */
         }
 
 
         button { font-family: var(--font-family); cursor: pointer; border: none; background-color: var(--primary-color); color: white; padding: 10px 15px; border-radius: var(--border-radius); font-size: 1rem; transition: background-color 0.2s ease, box-shadow 0.2s ease; font-weight: 500; }
         button:hover { background-color: color-mix(in srgb, var(--primary-color) 85%, black); box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06); }
         button:active { background-color: color-mix(in srgb, var(--primary-color) 70%, black); }
-        
+
         .icon-button { background: none; padding: 6px; font-size: 1.5rem; color: var(--text-secondary-color); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
         .icon-button:hover { background-color: color-mix(in srgb, var(--surface-color) 50%, var(--background-color) 50%); color: var(--primary-color); }
 
 
         /* --- App Container & Layout --- */
-        #app-container { 
-            display: flex; 
+        #app-container {
+            display: flex;
             height: 100vh; /* Takes full viewport height */
             width: 100%; /* MODIFIED: Changed from 100vw to 100% for robustness */
             overflow: hidden; /* Contains all app content, hides overflow */
-            position: relative; 
+            position: relative;
         }
 
         /* --- Chat History Sidebar --- */
@@ -92,7 +92,7 @@
         header h1 { font-size: 1.5rem; color: var(--text-color); margin-left: 10px; flex-grow: 1; text-align: center; font-weight: 500; }
         #menu-toggle-btn { font-size: 1.8rem; background: none; color: var(--primary-color); padding: 5px; z-index: 10; /* Ensure it's clickable */ }
         #theme-toggle-btn { font-size: 1.5rem; background: none; color: var(--primary-color); padding: 5px; margin-left: 10px; }
-        
+
         /* Model Toggle Switch */
         .model-toggle-container { display: flex; align-items: center; margin-left: auto; font-size: 0.9rem; color: var(--text-secondary-color); }
         .model-toggle-container label { margin-right: 8px; cursor: pointer; }
@@ -129,7 +129,7 @@
         #message-input::placeholder { color: var(--text-secondary-color); }
         #message-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-color) 20%, transparent); }
         #send-button { margin-left: 10px; height: var(--input-height); min-width: 80px; align-self: flex-end; }
-        
+
         #image-upload-button { margin-right: 8px; }
         #image-preview-container { position: relative; margin-bottom: 5px; /* Above textarea */ display: none; /* Hidden by default */ padding: 0 15px; background-color: var(--surface-color); }
         #image-preview-container img { max-width: 100px; max-height: 100px; border-radius: 8px; border: 1px solid var(--border-color); }
@@ -147,9 +147,9 @@
             .model-toggle-container label { margin-right: 4px; }
             .model-toggle-switch { width: 34px; height: 20px; }
             /* MODIFIED: Corrected selector from .model-toggle-switch:before to .model-toggle-slider:before and adjusted properties */
-            .model-toggle-slider:before { 
-                height: 14px; 
-                width: 14px; 
+            .model-toggle-slider:before {
+                height: 14px;
+                width: 14px;
                 /* left: 3px; bottom: 3px; remain from global, should be fine */
             }
             input:checked + .model-toggle-slider:before { transform: translateX(14px); }
@@ -170,7 +170,7 @@
             <div id="history-list"></div>
             <button id="clear-all-history-btn">Clear All History</button>
         </div>
-        
+
         <div id="overlay"></div>
 
         <div id="main-content">
@@ -190,7 +190,7 @@
             <div id="chat-window">
                 <div id="chat-messages"></div>
             </div>
-            
+
             <div id="image-preview-container">
                 <img id="image-preview" src="#" alt="Image preview"/>
                 <button id="remove-image-button" aria-label="Remove image">×</button>
@@ -235,7 +235,7 @@
             // Application State
             let currentChatId = null;
             let conversationHistoryForAPI = [];
-            let allChats = {}; 
+            let allChats = {};
             let currentModel = MODEL_FLASH; // Default model
             let attachedImage = { // To store base64 data and mimeType
                 data: null,
@@ -334,7 +334,7 @@
                     };
                     messageDiv.appendChild(imgPreviewInChat);
                 }
-                
+
                 if (text && text.trim() !== "") {
                      if (senderRole === 'model' && text.includes('```')) {
                         const parts = text.split(/```(\w*)\n([\s\S]*?)\n```/g);
@@ -348,7 +348,7 @@
                                 const code = document.createElement('code');
                                 const language = parts[index-1]; // This is the language specifier
                                 if (language) code.className = `language-${language}`;
-                                code.textContent = part; 
+                                code.textContent = part;
                                 pre.appendChild(code);
                                 messageDiv.appendChild(pre);
                             }
@@ -374,15 +374,15 @@
             // Chat History Management (LocalStorage)
             function saveChatsToLocalStorage() { localStorage.setItem('aiForEveryoneChatHistories', JSON.stringify(allChats)); }
             function loadChatsFromLocalStorage() { const storedChats = localStorage.getItem('aiForEveryoneChatHistories'); if (storedChats) allChats = JSON.parse(storedChats); else allChats = {}; renderHistoryList(); }
-            
-            function startRenameChat(chatId, titleSpan) { 
+
+            function startRenameChat(chatId, titleSpan) {
                 const currentTitle = titleSpan.textContent;
                 const input = document.createElement('input');
                 input.type = 'text'; input.value = currentTitle; input.className = 'history-item-title-input';
                 titleSpan.replaceWith(input); input.focus(); input.select();
                 const saveRename = () => {
                     const newTitle = input.value.trim();
-                    if (newTitle && newTitle !== currentTitle) { allChats[chatId].title = newTitle; saveChatsToLocalStorage(); titleSpan.textContent = newTitle; } 
+                    if (newTitle && newTitle !== currentTitle) { allChats[chatId].title = newTitle; saveChatsToLocalStorage(); titleSpan.textContent = newTitle; }
                     else { titleSpan.textContent = currentTitle; }
                     input.replaceWith(titleSpan);
                 };
@@ -390,7 +390,7 @@
                 input.addEventListener('keypress', (e) => { if (e.key === 'Enter') input.blur(); else if (e.key === 'Escape') { titleSpan.textContent = currentTitle; input.replaceWith(titleSpan); }});
             }
 
-            function renderHistoryList() { 
+            function renderHistoryList() {
                 historyList.innerHTML = '';
                 if (Object.keys(allChats).length === 0) { const noHistoryItem = document.createElement('p'); noHistoryItem.textContent = 'No chats yet. Start a new one!'; noHistoryItem.style.textAlign = 'center'; noHistoryItem.style.color = 'var(--text-secondary-color)'; historyList.appendChild(noHistoryItem); return; }
                 Object.entries(allChats).sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0))
@@ -406,26 +406,26 @@
                 });
             }
 
-            function createNewChat() { 
+            function createNewChat() {
                 currentChatId = generateUUID(); conversationHistoryForAPI = []; chatMessages.innerHTML = ''; messageInput.value = '';
                 const welcomeMsg = "Hello! I'm your AI assistant. How can I help you today?"; addMessageToDOM('model', welcomeMsg);
                 allChats[currentChatId] = { title: `New Chat ${Object.keys(allChats).length + 1}`, uiMessages: [{ senderRole: 'model', text: welcomeMsg }], apiMessages: [], timestamp: Date.now() };
                 saveChatsToLocalStorage(); renderHistoryList(); setActiveHistoryItem(currentChatId); messageInput.focus();
             }
 
-            function loadChat(chatId) { 
-                if (!allChats[chatId]) return; currentChatId = chatId; const chatData = allChats[chatId]; chatMessages.innerHTML = ''; 
+            function loadChat(chatId) {
+                if (!allChats[chatId]) return; currentChatId = chatId; const chatData = allChats[chatId]; chatMessages.innerHTML = '';
                 conversationHistoryForAPI = [...(chatData.apiMessages || [])];
-                (chatData.uiMessages || []).forEach(msg => { addMessageToDOM(msg.senderRole, msg.text, 'text', msg.imageDataUrl); }); 
+                (chatData.uiMessages || []).forEach(msg => { addMessageToDOM(msg.senderRole, msg.text, 'text', msg.imageDataUrl); });
                 setActiveHistoryItem(chatId); messageInput.focus(); scrollToBottom();
             }
 
-            function deleteChat(chatId) { 
+            function deleteChat(chatId) {
                 if (confirm(`Are you sure you want to delete "${allChats[chatId]?.title || 'this chat'}"?`)) {
                     delete allChats[chatId]; saveChatsToLocalStorage(); renderHistoryList();
                     if (currentChatId === chatId) {
                         const remainingChatIds = Object.keys(allChats);
-                        if (remainingChatIds.length > 0) { const sortedChats = Object.entries(allChats).sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0)); loadChat(sortedChats[0][0]); } 
+                        if (remainingChatIds.length > 0) { const sortedChats = Object.entries(allChats).sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0)); loadChat(sortedChats[0][0]); }
                         else createNewChat();
                     }
                 }
@@ -437,7 +437,7 @@
 
             async function sendMessageToAPI(userMessageText) {
                 if (!currentChatId) createNewChat();
-                
+
                 const currentImageDataUrl = attachedImage.data ? `data:${attachedImage.mimeType};base64,${attachedImage.data}` : null;
                 addMessageToDOM('user', userMessageText, 'text', currentImageDataUrl);
 
@@ -457,7 +457,7 @@
                         }
                     });
                 }
-                if (partsForAPI.length === 0) { 
+                if (partsForAPI.length === 0) {
                     alert("Please enter text or attach an image."); return;
                 }
 
@@ -465,10 +465,10 @@
                 allChats[currentChatId].apiMessages = [...conversationHistoryForAPI];
                 allChats[currentChatId].timestamp = Date.now();
                 updateChatTitle(currentChatId, userMessageText || "Image Query");
-                saveChatsToLocalStorage(); 
+                saveChatsToLocalStorage();
 
                 if (attachedImage.data) {
-                    removeImageButton.click(); 
+                    removeImageButton.click();
                 }
 
                 const loadingMessageDOM = addMessageToDOM('model', 'Thinking', 'loading');
@@ -478,10 +478,10 @@
 
                 try {
                     const payload = {
-                        contents: conversationHistoryForAPI, 
+                        contents: conversationHistoryForAPI,
                         generationConfig: { "maxOutputTokens": 4096 } // Adjusted based on common limits
                     };
-                    
+
                     const response = await fetch(dynamicApiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -505,7 +505,7 @@
                             if (data.promptFeedback.safetyRatings) aiResponseText += ` ${data.promptFeedback.safetyRatings.map(r => `${r.category} was ${r.probability}`).join(', ')}`;
                             conversationHistoryForAPI.pop(); allChats[currentChatId].apiMessages.pop();
                         }
-                        
+
                         addMessageToDOM('model', aiResponseText);
                         if (!(data.promptFeedback?.blockReason)) {
                             allChats[currentChatId].uiMessages.push({ senderRole: 'model', text: aiResponseText });
@@ -549,7 +549,7 @@
 
             // Initialization
             function init() {
-                loadChatsFromLocalStorage(); 
+                loadChatsFromLocalStorage();
                 const preferredTheme = localStorage.getItem('chatTheme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
                 applyTheme(preferredTheme);
 
@@ -558,7 +558,7 @@
                 setModel(proModeEnabled);
 
                 const chatIds = Object.keys(allChats);
-                if (chatIds.length > 0) { const sortedChats = Object.entries(allChats).sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0)); loadChat(sortedChats[0][0]); } 
+                if (chatIds.length > 0) { const sortedChats = Object.entries(allChats).sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0)); loadChat(sortedChats[0][0]); }
                 else createNewChat();
                 adjustTextareaHeight();
             }
