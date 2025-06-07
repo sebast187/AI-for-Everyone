@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gemini AI Chat</title>
+    <title>AI for Everyone</title>
     <style>
         /* --- Global Reset & Basic Styling --- */
         :root {
@@ -395,10 +395,6 @@
             }
         }
 
-        /* Desktop specific styles can go here if any are needed beyond the universal overlay */
-        /* For example, if you wanted slightly different aesthetics for the overlay on desktop */
-        /* @media (min-width: 769px) { ... } */
-
     </style>
 </head>
 <body data-theme="dark"> <!-- Default to dark theme -->
@@ -421,7 +417,7 @@
         <div id="main-content">
             <header>
                 <button id="menu-toggle-btn" aria-label="Toggle chat history menu">☰</button>
-                <h1>Gemini AI Chat</h1>
+                <h1>AI for Everyone</h1>
                 <button id="theme-toggle-btn" aria-label="Toggle theme">🌓</button>
             </header>
 
@@ -432,7 +428,7 @@
             </div>
 
             <div id="input-area">
-                <textarea id="message-input" placeholder="Ask Gemini anything..." rows="1"></textarea>
+                <textarea id="message-input" placeholder="Ask AI anything..." rows="1"></textarea> {/* Optional: Update placeholder */}
                 <button id="send-button" aria-label="Send message">Send</button>
             </div>
         </div>
@@ -455,7 +451,7 @@
             const historyList = document.getElementById('history-list');
             const newChatBtn = document.getElementById('new-chat-btn');
             const clearAllHistoryBtn = document.getElementById('clear-all-history-btn');
-            const mainContent = document.getElementById('main-content'); // Though not directly manipulated for margin anymore
+            const mainContent = document.getElementById('main-content'); 
             const overlay = document.getElementById('overlay');
             const themeToggleBtn = document.getElementById('theme-toggle-btn');
 
@@ -505,7 +501,7 @@
 
                 const roleSpan = document.createElement('span');
                 roleSpan.classList.add('message-role');
-                roleSpan.textContent = senderRole === 'user' ? 'You' : 'AI (Gemini)';
+                roleSpan.textContent = senderRole === 'user' ? 'You' : 'AI'; // Simplified role display
                 messageDiv.appendChild(roleSpan);
                 
                 if (senderRole === 'model' && text.includes('```')) { 
@@ -539,11 +535,11 @@
 
             // --- Chat History Management (LocalStorage) ---
             function saveChatsToLocalStorage() {
-                localStorage.setItem('geminiChatHistories', JSON.stringify(allChats));
+                localStorage.setItem('aiForEveryoneChatHistories', JSON.stringify(allChats)); // Updated key
             }
 
             function loadChatsFromLocalStorage() {
-                const storedChats = localStorage.getItem('geminiChatHistories');
+                const storedChats = localStorage.getItem('aiForEveryoneChatHistories'); // Updated key
                 if (storedChats) {
                     allChats = JSON.parse(storedChats);
                 } else {
@@ -590,7 +586,9 @@
 
                     historyItem.onclick = () => {
                         loadChat(id);
-                        if (window.innerWidth <= 768) toggleSidebar(false);
+                        if (window.innerWidth <= 768 || chatHistorySidebar.classList.contains('open')) {
+                            toggleSidebar(false);
+                        }
                     };
                     historyList.appendChild(historyItem);
                 });
@@ -602,7 +600,7 @@
                 chatMessages.innerHTML = '';
                 messageInput.value = '';
                 
-                const welcomeMsg = "Hello! I'm Gemini. How can I assist you today?";
+                const welcomeMsg = "Hello! I'm your AI assistant. How can I help you today?"; // Updated welcome
                 addMessageToDOM('model', welcomeMsg);
 
                 allChats[currentChatId] = {
@@ -821,7 +819,7 @@
 
             newChatBtn.addEventListener('click', () => {
                 createNewChat();
-                if (window.innerWidth <= 768 || chatHistorySidebar.classList.contains('open')) { // Close if on mobile OR if already open
+                if (window.innerWidth <= 768 || chatHistorySidebar.classList.contains('open')) { 
                      toggleSidebar(false);
                 }
             });
