@@ -23,9 +23,9 @@
         [data-theme="light"] {
             --primary-color: #1a73e8;
             --secondary-color: #34A853;
-            --background-color: #f8f9fa; /* Lighter Google-ish background */
+            --background-color: #f8f9fa;
             --surface-color: #ffffff;
-            --text-color: #202124;  /* Google text color */
+            --text-color: #202124; 
             --text-secondary-color: #5f6368;
             --border-color: #dadce0;
         }
@@ -41,7 +41,7 @@
             font-family: var(--font-family);
             background-color: var(--background-color);
             color: var(--text-color);
-            overflow: hidden; /* Prevent body scroll, manage scrolling in components */
+            overflow: hidden;
             font-size: 16px;
         }
 
@@ -76,25 +76,25 @@
             position: relative; 
         }
 
-        /* --- Chat History Sidebar (Overlay on ALL screen sizes) --- */
+        /* --- Chat History Sidebar --- */
         #chat-history-sidebar {
             width: 280px;
             background-color: var(--surface-color);
             display: flex;
             flex-direction: column;
             padding: 15px;
-            position: fixed; /* Always fixed for overlay behavior */
-            left: -280px;  /* Initially off-screen (negative of its width) */
+            position: fixed;
+            left: -280px;
             top: 0;
             bottom: 0;
-            z-index: 1000; /* Above main content and overlay */
+            z-index: 1000;
             transition: left 0.3s ease-in-out;
             overflow-y: auto;
-            box-shadow: 3px 0 15px rgba(0,0,0,0.2); /* More prominent shadow for overlay */
+            box-shadow: 3px 0 15px rgba(0,0,0,0.2);
         }
 
         #chat-history-sidebar.open {
-            left: 0; /* Slides into view */
+            left: 0;
         }
 
         #chat-history-sidebar h2 {
@@ -147,29 +147,51 @@
             color: white;
             font-weight: bold;
         }
-
-        .history-item-title {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-right: 10px;
-            flex-grow: 1;
+        
+        .history-item-controls {
+            display: flex;
+            align-items: center;
         }
 
-        .delete-chat-btn {
+        .rename-chat-btn, .delete-chat-btn {
             background: none;
             border: none;
             color: var(--text-secondary-color);
             font-size: 0.9rem;
             padding: 5px;
+            line-height: 1; /* Ensure icons align well */
         }
+        .history-item:hover .rename-chat-btn,
         .history-item:hover .delete-chat-btn,
+        .history-item.active .rename-chat-btn,
         .history-item.active .delete-chat-btn {
             color: white;
+        }
+        .rename-chat-btn:hover {
+            color: var(--secondary-color);
         }
         .delete-chat-btn:hover {
             color: var(--error-color);
         }
+
+        .history-item-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 5px; /* Reduced margin */
+            flex-grow: 1;
+        }
+        .history-item-title-input {
+            flex-grow: 1;
+            padding: 4px 6px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            margin-right: 5px;
+        }
+
 
         #clear-all-history-btn {
             background-color: var(--error-color);
@@ -189,14 +211,14 @@
         }
 
 
-        /* --- Main Content Area (No longer pushed by sidebar) --- */
+        /* --- Main Content Area --- */
         #main-content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             height: 100%;
             background-color: var(--background-color);
-            width: 100%; /* Ensure it always tries to take full width of its container */
+            width: 100%;
         }
 
         header {
@@ -205,8 +227,8 @@
             border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            min-height: 60px; /* Ensure header has some height */
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Subtle shadow for header */
+            min-height: 60px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         header h1 {
@@ -214,7 +236,7 @@
             color: var(--text-color);
             margin-left: 10px;
             flex-grow: 1;
-            text-align: center; /* Center title if menu button is on left */
+            text-align: center;
             font-weight: 500;
         }
 
@@ -230,7 +252,7 @@
             background: none;
             color: var(--primary-color);
             padding: 5px;
-            margin-left: auto; /* Push to the right */
+            margin-left: auto;
         }
 
 
@@ -253,12 +275,29 @@
             padding: 12px 18px;
             border-radius: var(--border-radius);
             max-width: 75%;
-            line-height: 1.6; /* Improved readability */
+            line-height: 1.6;
             word-wrap: break-word;
             display: flex;
             flex-direction: column; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.08); /* Subtle shadow on messages */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
         }
+        .message p, .message pre { /* Ensure paragraphs and preformatted text inside messages break words properly */
+            word-wrap: break-word;
+            white-space: pre-wrap; /* For <pre> to wrap and respect newlines */
+        }
+        .message code { /* For inline code and code blocks */
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            background-color: color-mix(in srgb, var(--surface-color) 70%, var(--background-color) 30%);
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .message pre code { /* Code blocks specifically */
+            display: block;
+            padding: 0.5em;
+            overflow-x: auto; /* Allow horizontal scroll for long code lines */
+        }
+
 
         .message.user {
             background-color: var(--primary-color);
@@ -318,7 +357,7 @@
             padding: 10px 15px;
             background-color: var(--surface-color);
             border-top: 1px solid var(--border-color);
-            align-items: flex-end; /* Align items to bottom for textarea growth */
+            align-items: flex-end;
         }
 
         #message-input {
@@ -354,7 +393,7 @@
             align-self: flex-end; 
         }
         
-        /* --- Overlay (Active on ALL screen sizes when sidebar is open) --- */
+        /* --- Overlay --- */
         #overlay {
             display: none;
             position: fixed;
@@ -362,8 +401,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Dimming effect */
-            z-index: 999; /* Below sidebar, above main content */
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
         }
 
         #overlay.active {
@@ -397,7 +436,7 @@
 
     </style>
 </head>
-<body data-theme="dark"> <!-- Default to dark theme -->
+<body data-theme="dark">
 
     <div id="app-container">
         <div id="chat-history-sidebar">
@@ -412,7 +451,7 @@
             <button id="clear-all-history-btn">Clear All History</button>
         </div>
         
-        <div id="overlay"></div> <!-- For mobile sidebar background dim -->
+        <div id="overlay"></div>
 
         <div id="main-content">
             <header>
@@ -428,7 +467,7 @@
             </div>
 
             <div id="input-area">
-                <textarea id="message-input" placeholder="Ask AI anything..." rows="1"></textarea> {/* Optional: Update placeholder */}
+                <textarea id="message-input" placeholder="Ask AI anything..." rows="1"></textarea>
                 <button id="send-button" aria-label="Send message">Send</button>
             </div>
         </div>
@@ -436,11 +475,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const GEMINI_API_KEY = 'AIzaSyDSmnag3Etegff-TzHUgf-cgvgiPGYCh8I'; // Your Gemini API Key
+            const GEMINI_API_KEY = 'AIzaSyDSmnag3Etegff-TzHUgf-cgvgiPGYCh8I';
             const GEMINI_MODEL = 'gemini-1.5-flash-latest'; 
             const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
-            // --- DOM Elements ---
+            // DOM Elements
             const messageInput = document.getElementById('message-input');
             const sendButton = document.getElementById('send-button');
             const chatMessages = document.getElementById('chat-messages');
@@ -451,16 +490,15 @@
             const historyList = document.getElementById('history-list');
             const newChatBtn = document.getElementById('new-chat-btn');
             const clearAllHistoryBtn = document.getElementById('clear-all-history-btn');
-            const mainContent = document.getElementById('main-content'); 
             const overlay = document.getElementById('overlay');
             const themeToggleBtn = document.getElementById('theme-toggle-btn');
 
-            // --- Application State ---
+            // Application State
             let currentChatId = null;
             let conversationHistoryForAPI = [];
             let allChats = {}; 
 
-            // --- Utility Functions ---
+            // Utility Functions
             function generateUUID() {
                 return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
                     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -472,12 +510,36 @@
             }
 
             function escapeHTML(str) {
+                if (typeof str !== 'string') return '';
                 const p = document.createElement('p');
                 p.textContent = str;
                 return p.innerHTML;
             }
 
-            // --- Theme Management ---
+            // Basic Markdown to HTML Renderer
+            function renderSimpleMarkdown(text) {
+                let html = escapeHTML(text); // Escape ALL HTML first for security
+
+                // Bold: **text** or __text__
+                html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>');
+                html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+                
+                // Italic: *text* or _text_
+                // Negative lookaheads/lookbehinds to avoid matching parts of words or multiple asterisks/underscores
+                html = html.replace(/(?<!\*)\*([^\*\s][^\*]*?[^\*\s]|[^\*\s])\*(?!\*)/g, '<em>$1</em>');
+                html = html.replace(/(?<!_)\_([^\_\s][^\_]*?[^\_\s]|[^\_\s])\_(?!_)/g, '<em>$1</em>');
+
+                // Inline code: `code`
+                html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+                
+                // Newlines to <br> (already handled by .replace(/\n/g, '<br>') later, 
+                // but good to keep in mind if order changes)
+
+                return html;
+            }
+
+
+            // Theme Management
             function applyTheme(theme) {
                 document.body.setAttribute('data-theme', theme);
                 localStorage.setItem('chatTheme', theme);
@@ -491,7 +553,7 @@
                 applyTheme(newTheme);
             }
 
-            // --- Message Display ---
+            // Message Display
             function addMessageToDOM(senderRole, text, type = 'text') {
                 const messageDiv = document.createElement('div');
                 messageDiv.classList.add('message', senderRole === 'user' ? 'user' : 'ai');
@@ -501,31 +563,40 @@
 
                 const roleSpan = document.createElement('span');
                 roleSpan.classList.add('message-role');
-                roleSpan.textContent = senderRole === 'user' ? 'You' : 'AI'; // Simplified role display
+                roleSpan.textContent = senderRole === 'user' ? 'You' : 'AI';
                 messageDiv.appendChild(roleSpan);
                 
-                if (senderRole === 'model' && text.includes('```')) { 
-                    const parts = text.split(/```(\w*)\n([\s\S]*?)\n```/g);
+                // Handle multiline code blocks separately for proper <pre><code> structure
+                if (senderRole === 'model' && text.includes('```')) {
+                    const parts = text.split(/```(\w*)\n([\s\S]*?)\n```/g); // Captures language and content
+                    let currentParagraph = document.createElement('p'); // For text outside code blocks
+                    
                     parts.forEach((part, index) => {
-                        if (index % 4 === 2) { 
+                        if (index % 4 === 0 && part.trim() !== '') { // Regular text
+                            currentParagraph.innerHTML += renderSimpleMarkdown(part).replace(/\n/g, '<br>');
+                        } else if (index % 4 === 2) { // Code content
+                            if (currentParagraph.innerHTML.trim() !== '') { // Append pending paragraph if any
+                                messageDiv.appendChild(currentParagraph);
+                                currentParagraph = document.createElement('p');
+                            }
                             const pre = document.createElement('pre');
                             const code = document.createElement('code');
-                            if (parts[index-1]) { 
-                                code.className = `language-${parts[index-1]}`;
+                            const language = parts[index-1]; // Language specified
+                            if (language) {
+                                code.className = `language-${language}`;
                             }
-                            code.textContent = part;
+                            code.textContent = part; // Code content should not be markdown parsed, only escaped
                             pre.appendChild(code);
                             messageDiv.appendChild(pre);
-                        } else if (index % 4 === 0 && part.trim() !== '') { 
-                            const p = document.createElement('p');
-                            p.innerHTML = escapeHTML(part).replace(/\n/g, '<br>');
-                            messageDiv.appendChild(p);
                         }
                     });
-                } else {
-                    const p = document.createElement('p');
-                    p.innerHTML = escapeHTML(text).replace(/\n/g, '<br>');
-                    messageDiv.appendChild(p);
+                    if (currentParagraph.innerHTML.trim() !== '') { // Append any remaining paragraph
+                         messageDiv.appendChild(currentParagraph);
+                    }
+                } else { // No multiline code blocks, or user message
+                     const p = document.createElement('p');
+                     p.innerHTML = (senderRole === 'model' ? renderSimpleMarkdown(text) : escapeHTML(text)).replace(/\n/g, '<br>');
+                     messageDiv.appendChild(p);
                 }
 
                 chatMessages.appendChild(messageDiv);
@@ -533,13 +604,13 @@
                 return messageDiv;
             }
 
-            // --- Chat History Management (LocalStorage) ---
+            // Chat History Management (LocalStorage)
             function saveChatsToLocalStorage() {
-                localStorage.setItem('aiForEveryoneChatHistories', JSON.stringify(allChats)); // Updated key
+                localStorage.setItem('aiForEveryoneChatHistories', JSON.stringify(allChats));
             }
 
             function loadChatsFromLocalStorage() {
-                const storedChats = localStorage.getItem('aiForEveryoneChatHistories'); // Updated key
+                const storedChats = localStorage.getItem('aiForEveryoneChatHistories');
                 if (storedChats) {
                     allChats = JSON.parse(storedChats);
                 } else {
@@ -547,6 +618,41 @@
                 }
                 renderHistoryList();
             }
+            
+            function startRenameChat(chatId, titleSpan) {
+                const currentTitle = titleSpan.textContent;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentTitle;
+                input.className = 'history-item-title-input';
+                
+                titleSpan.replaceWith(input);
+                input.focus();
+                input.select();
+
+                const saveRename = () => {
+                    const newTitle = input.value.trim();
+                    if (newTitle && newTitle !== currentTitle) {
+                        allChats[chatId].title = newTitle;
+                        saveChatsToLocalStorage();
+                        titleSpan.textContent = newTitle; // Update the original span
+                    } else {
+                        titleSpan.textContent = currentTitle; // Revert if empty or unchanged
+                    }
+                    input.replaceWith(titleSpan); // Replace input with span
+                };
+
+                input.addEventListener('blur', saveRename);
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        input.blur(); // Trigger save on Enter
+                    } else if (e.key === 'Escape') {
+                        titleSpan.textContent = currentTitle; // Revert on Escape
+                        input.replaceWith(titleSpan);
+                    }
+                });
+            }
+
 
             function renderHistoryList() { 
                 historyList.innerHTML = '';
@@ -573,6 +679,19 @@
                     titleSpan.textContent = chatData.title || `Chat ${id.substring(0, 8)}`;
                     historyItem.appendChild(titleSpan);
 
+                    const controlsDiv = document.createElement('div');
+                    controlsDiv.classList.add('history-item-controls');
+
+                    const renameBtn = document.createElement('button');
+                    renameBtn.classList.add('rename-chat-btn');
+                    renameBtn.innerHTML = '✏️'; // Edit icon
+                    renameBtn.setAttribute('aria-label', `Rename chat: ${titleSpan.textContent}`);
+                    renameBtn.onclick = (e) => {
+                        e.stopPropagation(); // Prevent loading chat
+                        startRenameChat(id, titleSpan);
+                    };
+                    controlsDiv.appendChild(renameBtn);
+
                     const deleteBtn = document.createElement('button');
                     deleteBtn.classList.add('delete-chat-btn');
                     deleteBtn.innerHTML = '🗑️';
@@ -582,9 +701,15 @@
                         e.stopPropagation();
                         deleteChat(id);
                     };
-                    historyItem.appendChild(deleteBtn);
+                    controlsDiv.appendChild(deleteBtn);
+                    historyItem.appendChild(controlsDiv);
+
 
                     historyItem.onclick = () => {
+                        // Check if titleSpan's parent is an input, if so, don't load chat
+                        if (titleSpan.parentElement && titleSpan.parentElement.querySelector('.history-item-title-input')) {
+                            return; 
+                        }
                         loadChat(id);
                         if (window.innerWidth <= 768 || chatHistorySidebar.classList.contains('open')) {
                             toggleSidebar(false);
@@ -600,7 +725,7 @@
                 chatMessages.innerHTML = '';
                 messageInput.value = '';
                 
-                const welcomeMsg = "Hello! I'm your AI assistant. How can I help you today?"; // Updated welcome
+                const welcomeMsg = "Hello! I'm your AI assistant. How can I help you today?";
                 addMessageToDOM('model', welcomeMsg);
 
                 allChats[currentChatId] = {
@@ -642,7 +767,9 @@
                     if (currentChatId === chatId) {
                         const remainingChatIds = Object.keys(allChats);
                         if (remainingChatIds.length > 0) {
-                            loadChat(remainingChatIds[0]);
+                            const sortedChats = Object.entries(allChats)
+                                 .sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0));
+                            loadChat(sortedChats[0][0]); // Load most recent after delete
                         } else {
                             createNewChat();
                         }
@@ -669,11 +796,13 @@
             }
 
             function updateChatTitle(chatId, userMessageText) { 
-                if (allChats[chatId] && (allChats[chatId].title === `New Chat ${Object.keys(allChats).length}` || allChats[chatId].title.startsWith("New Chat") || allChats[chatId].uiMessages.length <= 2)) {
+                // Only auto-update if it's a default "New Chat X" title or very early in convo
+                const currentTitle = allChats[chatId]?.title || '';
+                if (allChats[chatId] && (currentTitle.startsWith("New Chat ") || allChats[chatId].uiMessages.length <= 2)) {
                     const newTitle = userMessageText.substring(0, 30) + (userMessageText.length > 30 ? '...' : '');
                     allChats[chatId].title = newTitle;
                     saveChatsToLocalStorage();
-                    renderHistoryList();
+                    renderHistoryList(); // Re-render to show new title
                 }
             }
 
@@ -691,9 +820,7 @@
                 allChats[currentChatId].apiMessages = [...conversationHistoryForAPI];
                 allChats[currentChatId].timestamp = Date.now();
 
-                if (allChats[currentChatId].uiMessages.length <= 2) { 
-                    updateChatTitle(currentChatId, userMessageText);
-                }
+                updateChatTitle(currentChatId, userMessageText); // Attempt to auto-title
                 saveChatsToLocalStorage(); 
 
                 const loadingMessageDOM = addMessageToDOM('model', 'Thinking', 'loading');
@@ -704,7 +831,7 @@
                     const payload = {
                         contents: conversationHistoryForAPI, 
                         generationConfig: { 
-                            "maxOutputTokens": 2048,
+                            "maxOutputTokens": 4096, // Increased max tokens a bit
                         },
                     };
                     
@@ -733,9 +860,12 @@
                         if (data.candidates && data.candidates.length > 0 &&
                             data.candidates[0].content && data.candidates[0].content.parts &&
                             data.candidates[0].content.parts.length > 0) {
-                            aiResponseText = data.candidates[0].content.parts[0].text;
+                            aiResponseText = data.candidates[0].content.parts.map(part => part.text).join(""); // Join parts if any
                         } else if (data.promptFeedback && data.promptFeedback.blockReason) {
-                            aiResponseText = `Blocked: ${data.promptFeedback.blockReason}. ${data.promptFeedback.safetyRatings.map(r => `${r.category} was ${r.probability}`).join(', ')}`;
+                            aiResponseText = `Blocked: ${data.promptFeedback.blockReason}.`;
+                            if (data.promptFeedback.safetyRatings) {
+                                aiResponseText += ` ${data.promptFeedback.safetyRatings.map(r => `${r.category} was ${r.probability}`).join(', ')}`;
+                            }
                             conversationHistoryForAPI.pop();
                             allChats[currentChatId].apiMessages.pop();
                         }
@@ -750,11 +880,11 @@
                         }
                         allChats[currentChatId].timestamp = Date.now();
                         saveChatsToLocalStorage();
-                        renderHistoryList();
+                        renderHistoryList(); // In case timestamp changes order
                     }
                 } catch (error) {
                     console.error('Fetch Error:', error);
-                    if (chatMessages.contains(loadingMessageDOM)) {
+                    if (loadingMessageDOM && chatMessages.contains(loadingMessageDOM)) {
                         chatMessages.removeChild(loadingMessageDOM);
                     }
                     addMessageToDOM('model', `Network Error: ${error.message}. Please check your connection.`, 'error');
@@ -788,22 +918,22 @@
                 messageInput.style.height = `${newHeight}px`;
             }
 
-            // --- Sidebar Toggle (Updated for pure overlay) ---
+            // Sidebar Toggle
             function toggleSidebar(forceState) {
                 const isOpen = chatHistorySidebar.classList.contains('open');
 
-                if (forceState === true || (forceState === undefined && !isOpen)) { // Open sidebar
+                if (forceState === true || (forceState === undefined && !isOpen)) {
                     chatHistorySidebar.classList.add('open');
                     overlay.classList.add('active'); 
                     menuToggleBtn.setAttribute('aria-expanded', 'true');
-                } else if (forceState === false || (forceState === undefined && isOpen)) { // Close sidebar
+                } else if (forceState === false || (forceState === undefined && isOpen)) {
                     chatHistorySidebar.classList.remove('open');
                     overlay.classList.remove('active'); 
                     menuToggleBtn.setAttribute('aria-expanded', 'false');
                 }
             }
 
-            // --- Event Listeners ---
+            // Event Listeners
             sendButton.addEventListener('click', handleSendMessage);
             messageInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -831,7 +961,7 @@
                 adjustTextareaHeight();
             });
 
-            // --- Initialization ---
+            // Initialization
             function init() {
                 loadChatsFromLocalStorage(); 
                 
