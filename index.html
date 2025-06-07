@@ -31,7 +31,21 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; font-family: var(--font-family); background-color: var(--background-color); color: var(--text-color); overflow: hidden; font-size: 16px; }
+        /* MODIFIED: html and body overflow handling */
+        html { 
+            height: 100%; 
+            font-family: var(--font-family); 
+            background-color: var(--background-color); /* Added for consistency if body doesn't cover */
+            color: var(--text-color); 
+            overflow-x: hidden; /* Prevent horizontal scrollbars globally */
+            font-size: 16px;
+        }
+        body { 
+            height: 100%; 
+            /* Inherits font, background, color from html */
+            overflow: hidden; /* Keep body itself from scrolling as app-container handles it */
+        }
+
 
         button { font-family: var(--font-family); cursor: pointer; border: none; background-color: var(--primary-color); color: white; padding: 10px 15px; border-radius: var(--border-radius); font-size: 1rem; transition: background-color 0.2s ease, box-shadow 0.2s ease; font-weight: 500; }
         button:hover { background-color: color-mix(in srgb, var(--primary-color) 85%, black); box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06); }
@@ -42,7 +56,13 @@
 
 
         /* --- App Container & Layout --- */
-        #app-container { display: flex; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
+        #app-container { 
+            display: flex; 
+            height: 100vh; /* Takes full viewport height */
+            width: 100%; /* MODIFIED: Changed from 100vw to 100% for robustness */
+            overflow: hidden; /* Contains all app content, hides overflow */
+            position: relative; 
+        }
 
         /* --- Chat History Sidebar --- */
         #chat-history-sidebar { width: 280px; background-color: var(--surface-color); display: flex; flex-direction: column; padding: 15px; position: fixed; left: -280px; top: 0; bottom: 0; z-index: 1000; transition: left 0.3s ease-in-out; overflow-y: auto; box-shadow: 3px 0 15px rgba(0,0,0,0.2); }
@@ -67,10 +87,10 @@
         #new-chat-btn:hover { background-color: color-mix(in srgb, var(--secondary-color) 80%, black); }
 
         /* --- Main Content Area --- */
-        #main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100%; background-color: var(--background-color); width: 100%; }
+        #main-content { flex-grow: 1; display: flex; flex-direction: column; height: 100%; background-color: var(--background-color); width: 100%; /* Ensures it tries to take full width within app-container flex */ }
         header { padding: 10px 15px; background-color: var(--surface-color); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; min-height: 60px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         header h1 { font-size: 1.5rem; color: var(--text-color); margin-left: 10px; flex-grow: 1; text-align: center; font-weight: 500; }
-        #menu-toggle-btn { font-size: 1.8rem; background: none; color: var(--primary-color); padding: 5px; z-index: 10; }
+        #menu-toggle-btn { font-size: 1.8rem; background: none; color: var(--primary-color); padding: 5px; z-index: 10; /* Ensure it's clickable */ }
         #theme-toggle-btn { font-size: 1.5rem; background: none; color: var(--primary-color); padding: 5px; margin-left: 10px; }
         
         /* Model Toggle Switch */
@@ -126,7 +146,12 @@
             .model-toggle-container { font-size: 0.8rem; }
             .model-toggle-container label { margin-right: 4px; }
             .model-toggle-switch { width: 34px; height: 20px; }
-            .model-toggle-switch:before { height: 14px; width: 14px; left: 3px; bottom: 3px; }
+            /* MODIFIED: Corrected selector from .model-toggle-switch:before to .model-toggle-slider:before and adjusted properties */
+            .model-toggle-slider:before { 
+                height: 14px; 
+                width: 14px; 
+                /* left: 3px; bottom: 3px; remain from global, should be fine */
+            }
             input:checked + .model-toggle-slider:before { transform: translateX(14px); }
 
             .message { max-width: 85%; }
@@ -174,7 +199,8 @@
             <div id="input-area">
                 <button id="image-upload-button" class="icon-button" aria-label="Upload image">📎</button>
                 <input type="file" id="image-input" accept="image/*" style="display: none;">
-                <textarea id="message-input" placeholder="Ask AI anything, or attach an image..." rows="1"></textarea>
+                <!-- MODIFIED: Placeholder text changed -->
+                <textarea id="message-input" placeholder="Ask AI anything..." rows="1"></textarea>
                 <button id="send-button" aria-label="Send message">Send</button>
             </div>
         </div>
@@ -182,7 +208,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const GEMINI_API_KEY = 'AIzaSyDSmnag3Etegff-TzHUgf-cgvgiPGYCh8I';
+            const GEMINI_API_KEY = 'AIzaSyDSmnag3Etegff-TzHUgf-cgvgiPGYCh8I'; // Replace with your actual key if needed for testing
             const MODEL_FLASH = 'gemini-1.5-flash-latest';
             const MODEL_PRO = 'gemini-1.5-pro-latest'; // More capable model
 
@@ -216,12 +242,11 @@
                 mimeType: null
             };
 
-            // Utility Functions (generateUUID, scrollToBottom, escapeHTML - same as before)
+            // Utility Functions
             function generateUUID() { return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)); }
             function scrollToBottom() { chatWindow.scrollTop = chatWindow.scrollHeight; }
             function escapeHTML(str) { if (typeof str !== 'string') return ''; const p = document.createElement('p'); p.textContent = str; return p.innerHTML; }
 
-            // Basic Markdown to HTML Renderer (same as before, with refined italic regex)
             function renderSimpleMarkdown(text) {
                 let html = escapeHTML(text);
                 html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>').replace(/__([^_]+)__/g, '<strong>$1</strong>');
@@ -230,7 +255,7 @@
                 return html;
             }
 
-            // Theme Management (same as before)
+            // Theme Management
             function applyTheme(theme) { document.body.setAttribute('data-theme', theme); localStorage.setItem('chatTheme', theme); themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌓'; themeToggleBtn.setAttribute('aria-label', `Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`); }
             function toggleTheme() { const currentTheme = document.body.getAttribute('data-theme') || 'dark'; const newTheme = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(newTheme); }
 
@@ -317,11 +342,11 @@
                         parts.forEach((part, index) => {
                             if (index % 4 === 0 && part.trim() !== '') {
                                 currentParagraph.innerHTML += renderSimpleMarkdown(part).replace(/\n/g, '<br>');
-                            } else if (index % 4 === 2) {
+                            } else if (index % 4 === 2) { // This is the code block content
                                 if (currentParagraph.innerHTML.trim() !== '') { messageDiv.appendChild(currentParagraph); currentParagraph = document.createElement('p'); }
                                 const pre = document.createElement('pre');
                                 const code = document.createElement('code');
-                                const language = parts[index-1];
+                                const language = parts[index-1]; // This is the language specifier
                                 if (language) code.className = `language-${language}`;
                                 code.textContent = part; 
                                 pre.appendChild(code);
@@ -350,7 +375,7 @@
             function saveChatsToLocalStorage() { localStorage.setItem('aiForEveryoneChatHistories', JSON.stringify(allChats)); }
             function loadChatsFromLocalStorage() { const storedChats = localStorage.getItem('aiForEveryoneChatHistories'); if (storedChats) allChats = JSON.parse(storedChats); else allChats = {}; renderHistoryList(); }
             
-            function startRenameChat(chatId, titleSpan) { /* ... same as before ... */ 
+            function startRenameChat(chatId, titleSpan) { 
                 const currentTitle = titleSpan.textContent;
                 const input = document.createElement('input');
                 input.type = 'text'; input.value = currentTitle; input.className = 'history-item-title-input';
@@ -365,7 +390,7 @@
                 input.addEventListener('keypress', (e) => { if (e.key === 'Enter') input.blur(); else if (e.key === 'Escape') { titleSpan.textContent = currentTitle; input.replaceWith(titleSpan); }});
             }
 
-            function renderHistoryList() { /* ... same as before ... */ 
+            function renderHistoryList() { 
                 historyList.innerHTML = '';
                 if (Object.keys(allChats).length === 0) { const noHistoryItem = document.createElement('p'); noHistoryItem.textContent = 'No chats yet. Start a new one!'; noHistoryItem.style.textAlign = 'center'; noHistoryItem.style.color = 'var(--text-secondary-color)'; historyList.appendChild(noHistoryItem); return; }
                 Object.entries(allChats).sort(([,a],[,b]) => (b.timestamp || 0) - (a.timestamp || 0))
@@ -381,21 +406,21 @@
                 });
             }
 
-            function createNewChat() { /* ... same as before ... */ 
+            function createNewChat() { 
                 currentChatId = generateUUID(); conversationHistoryForAPI = []; chatMessages.innerHTML = ''; messageInput.value = '';
                 const welcomeMsg = "Hello! I'm your AI assistant. How can I help you today?"; addMessageToDOM('model', welcomeMsg);
                 allChats[currentChatId] = { title: `New Chat ${Object.keys(allChats).length + 1}`, uiMessages: [{ senderRole: 'model', text: welcomeMsg }], apiMessages: [], timestamp: Date.now() };
                 saveChatsToLocalStorage(); renderHistoryList(); setActiveHistoryItem(currentChatId); messageInput.focus();
             }
 
-            function loadChat(chatId) { /* ... same as before ... */ 
+            function loadChat(chatId) { 
                 if (!allChats[chatId]) return; currentChatId = chatId; const chatData = allChats[chatId]; chatMessages.innerHTML = ''; 
                 conversationHistoryForAPI = [...(chatData.apiMessages || [])];
-                (chatData.uiMessages || []).forEach(msg => { addMessageToDOM(msg.senderRole, msg.text, 'text', msg.imageDataUrl); }); // Pass imageDataUrl if stored
+                (chatData.uiMessages || []).forEach(msg => { addMessageToDOM(msg.senderRole, msg.text, 'text', msg.imageDataUrl); }); 
                 setActiveHistoryItem(chatId); messageInput.focus(); scrollToBottom();
             }
 
-            function deleteChat(chatId) { /* ... same as before ... */ 
+            function deleteChat(chatId) { 
                 if (confirm(`Are you sure you want to delete "${allChats[chatId]?.title || 'this chat'}"?`)) {
                     delete allChats[chatId]; saveChatsToLocalStorage(); renderHistoryList();
                     if (currentChatId === chatId) {
@@ -406,22 +431,20 @@
                 }
             }
 
-            function clearAllChats() { /* ... same as before ... */ if (confirm('Are you sure you want to delete ALL chat history? This cannot be undone.')) { allChats = {}; saveChatsToLocalStorage(); createNewChat(); renderHistoryList(); }}
-            function setActiveHistoryItem(chatId) { /* ... same as before ... */ document.querySelectorAll('.history-item').forEach(item => { item.classList.remove('active'); if (item.dataset.chatId === chatId) item.classList.add('active'); });}
-            function updateChatTitle(chatId, userMessageText) { /* ... same as before ... */ const currentTitle = allChats[chatId]?.title || ''; if (allChats[chatId] && (currentTitle.startsWith("New Chat ") || allChats[chatId].uiMessages.length <= 1)) { const newTitle = userMessageText.substring(0, 30) + (userMessageText.length > 30 ? '...' : ''); allChats[chatId].title = newTitle; saveChatsToLocalStorage(); renderHistoryList(); }}
+            function clearAllChats() { if (confirm('Are you sure you want to delete ALL chat history? This cannot be undone.')) { allChats = {}; saveChatsToLocalStorage(); createNewChat(); renderHistoryList(); }}
+            function setActiveHistoryItem(chatId) { document.querySelectorAll('.history-item').forEach(item => { item.classList.remove('active'); if (item.dataset.chatId === chatId) item.classList.add('active'); });}
+            function updateChatTitle(chatId, userMessageText) { const currentTitle = allChats[chatId]?.title || ''; if (allChats[chatId] && (currentTitle.startsWith("New Chat ") || allChats[chatId].uiMessages.length <= 1)) { const newTitle = userMessageText.substring(0, 30) + (userMessageText.length > 30 ? '...' : ''); allChats[chatId].title = newTitle; saveChatsToLocalStorage(); renderHistoryList(); }}
 
             async function sendMessageToAPI(userMessageText) {
                 if (!currentChatId) createNewChat();
                 
-                // For UI, store image data URL to display it back in the chat
                 const currentImageDataUrl = attachedImage.data ? `data:${attachedImage.mimeType};base64,${attachedImage.data}` : null;
                 addMessageToDOM('user', userMessageText, 'text', currentImageDataUrl);
 
                 let userMessageForUI = { senderRole: 'user', text: userMessageText };
-                if (currentImageDataUrl) userMessageForUI.imageDataUrl = currentImageDataUrl; // Store for history
+                if (currentImageDataUrl) userMessageForUI.imageDataUrl = currentImageDataUrl;
                 allChats[currentChatId].uiMessages.push(userMessageForUI);
 
-                // Prepare parts for API
                 const partsForAPI = [];
                 if (userMessageText.trim() !== "") {
                     partsForAPI.push({ text: userMessageText });
@@ -434,7 +457,7 @@
                         }
                     });
                 }
-                if (partsForAPI.length === 0) { // Should not happen if send button is enabled properly
+                if (partsForAPI.length === 0) { 
                     alert("Please enter text or attach an image."); return;
                 }
 
@@ -444,9 +467,8 @@
                 updateChatTitle(currentChatId, userMessageText || "Image Query");
                 saveChatsToLocalStorage(); 
 
-                // Reset image after adding to history and preparing for API
                 if (attachedImage.data) {
-                    removeImageButton.click(); // Programmatically click remove to clear UI
+                    removeImageButton.click(); 
                 }
 
                 const loadingMessageDOM = addMessageToDOM('model', 'Thinking', 'loading');
@@ -457,7 +479,7 @@
                 try {
                     const payload = {
                         contents: conversationHistoryForAPI, 
-                        generationConfig: { "maxOutputTokens": 4096 }
+                        generationConfig: { "maxOutputTokens": 4096 } // Adjusted based on common limits
                     };
                     
                     const response = await fetch(dynamicApiUrl, {
@@ -503,15 +525,15 @@
 
             function handleSendMessage() {
                 const messageText = messageInput.value.trim();
-                if (messageText || attachedImage.data) { // Send if there's text OR an image
+                if (messageText || attachedImage.data) {
                     sendMessageToAPI(messageText);
                     messageInput.value = '';
                     adjustTextareaHeight();
                 }
             }
 
-            function adjustTextareaHeight() { /* ... same as before ... */ messageInput.style.height = 'auto'; let newHeight = messageInput.scrollHeight; const maxHeight = parseInt(getComputedStyle(messageInput).maxHeight, 10); if (newHeight > maxHeight) { newHeight = maxHeight; messageInput.style.overflowY = 'auto'; } else { messageInput.style.overflowY = 'hidden'; } messageInput.style.height = `${newHeight}px`;}
-            function toggleSidebar(forceState) { /* ... same as before ... */ const isOpen = chatHistorySidebar.classList.contains('open'); if (forceState === true || (forceState === undefined && !isOpen)) { chatHistorySidebar.classList.add('open'); overlay.classList.add('active'); menuToggleBtn.setAttribute('aria-expanded', 'true'); } else if (forceState === false || (forceState === undefined && isOpen)) { chatHistorySidebar.classList.remove('open'); overlay.classList.remove('active'); menuToggleBtn.setAttribute('aria-expanded', 'false'); }}
+            function adjustTextareaHeight() { messageInput.style.height = 'auto'; let newHeight = messageInput.scrollHeight; const maxHeight = parseInt(getComputedStyle(messageInput).maxHeight, 10); if (newHeight > maxHeight) { newHeight = maxHeight; messageInput.style.overflowY = 'auto'; } else { messageInput.style.overflowY = 'hidden'; } messageInput.style.height = `${newHeight}px`;}
+            function toggleSidebar(forceState) { const isOpen = chatHistorySidebar.classList.contains('open'); if (forceState === true || (forceState === undefined && !isOpen)) { chatHistorySidebar.classList.add('open'); overlay.classList.add('active'); menuToggleBtn.setAttribute('aria-expanded', 'true'); } else if (forceState === false || (forceState === undefined && isOpen)) { chatHistorySidebar.classList.remove('open'); overlay.classList.remove('active'); menuToggleBtn.setAttribute('aria-expanded', 'false'); }}
 
             // Event Listeners
             sendButton.addEventListener('click', handleSendMessage);
